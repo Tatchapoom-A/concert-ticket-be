@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TicketController } from './ticket.controller';
 import { TicketService } from '../services/ticket.service';
-import { Ticket } from '../entities/ticket.entity';
 import { ReserveHistory } from '../entities/reserve-history.entity';
 import { ReserveAction } from 'src/common/enums/reserve-action.enum';
 
@@ -36,12 +35,14 @@ describe('TicketController', () => {
 
   describe('create', () => {
     it('should create ticket', async () => {
-      const dto = { name: 'concert' } as any;
-      const result = {
-        "id": "9b225b14-317e-4495-a541-66998531a2c8",
+      const dto: any = {
         "concertName": "Test con 002",
         "description": "dafsegsfsf",
         "totalOfSeat": 10
+      };
+      const result = {
+        "id": "9b225b14-317e-4495-a541-66998531a2c8",
+        ...dto
       };
 
       service.create.mockResolvedValue(result);
@@ -55,14 +56,15 @@ describe('TicketController', () => {
 
   describe('delete', () => {
     it('should delete ticket', async () => {
-      service.delete.mockResolvedValue('ticket1');
+      const id = "9b225b14-317e-4495-a541-66998531a2c8";
+      service.delete.mockResolvedValue(id);
 
-      const result = await controller.delete('ticket1');
+      const result = await controller.delete(id);
 
-      expect(service.delete).toHaveBeenCalledWith('ticket1');
+      expect(service.delete).toHaveBeenCalledWith(id);
       expect(result).toEqual({
         success: true,
-        id: 'ticket1',
+        id: id,
       });
     });
   });
