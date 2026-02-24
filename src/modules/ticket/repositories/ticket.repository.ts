@@ -96,8 +96,8 @@ export class TicketRepository {
         return reserveData.id;
     }
 
-    async removeReserveTicket(ticketId: string): Promise<string> {
-        this.reserveRecord = this.reserveRecord.filter(i => i.id !== ticketId);
-        return ticketId;
+    async removeReserveTicket(reserveId: string): Promise<string> {
+        this.reserveRecord = this.reserveRecord.filter(i => i.id !== reserveId);
+        return reserveId;
     }
 }

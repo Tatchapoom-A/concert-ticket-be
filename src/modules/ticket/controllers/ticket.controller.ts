@@ -3,7 +3,9 @@ import { TicketService } from "../services/ticket.service";
 import { CreateTicketDto } from "../dto/ticket.dto";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { Role } from "src/common/enums/role.enum";
-import { MyReservationDto, ReserveTicketDto } from "../dto/reserve-ticket.dto";
+import { ReserveTicketDto } from "../dto/reserve-ticket.dto";
+import { Ticket } from "../entities/ticket.entity";
+import { ReserveHistory } from "../entities/reserve-history.entity";
 
 @Controller('tickets')
 export class TicketController {
@@ -11,7 +13,7 @@ export class TicketController {
 
     @Post()
     @Roles(Role.ADMIN)
-    async create(@Body() dto: CreateTicketDto) {
+    async create(@Body() dto: CreateTicketDto): Promise<Ticket> {
         return await this.ticketService.create(dto);
     }
 
@@ -26,7 +28,7 @@ export class TicketController {
     }
 
     @Get()
-    async findAll() {
+    async findAll(): Promise<Ticket[]> {
         return await this.ticketService.findAll();
     }
 
@@ -40,15 +42,15 @@ export class TicketController {
         }
     }
 
-    @Get('reservations/me')
+    @Get('reservations/user/:userId')
     @Roles(Role.USER)
-    async myReservation(@Body() dto: MyReservationDto) {
-        return await this.ticketService.myReservationHistory(dto.userId);
+    async myReservation(@Param("userId") userId: string): Promise<ReserveHistory[]> {
+        return await this.ticketService.myReservationHistory(userId);
     }
 
-    @Get('reservations/history')
+    @Get('reservations')
     @Roles(Role.ADMIN)
-    async reservationHistory() {
+    async reservationHistory(): Promise<ReserveHistory[]> {
         return await this.ticketService.reservationHistory();
     }
 }
