@@ -6,6 +6,7 @@ import { ReserveAction } from "src/common/enums/reserve-action.enum";
 import { Ticket } from "../entities/ticket.entity";
 import { ReserveHistory } from "../entities/reserve-history.entity";
 import { ReserveRecord } from "../entities/reserve-record.entity";
+import { Summary } from "../entities/reserve-summary.entity";
 
 @Injectable()
 export class TicketService {
@@ -22,13 +23,38 @@ export class TicketService {
         return await this.repo.delete(id);
     }
 
-    async findAll(): Promise<Ticket[]> {
-        const allTicket = await this.repo.findAll();
+    async getSummary(): Promise<Summary> {
+        const histories = await this.repo.reserveHistory();
+        const uniqueUser = histories.reduce((acc, cur) => {
+            acc[cur.userId + "|" + cur.ticketId] = cur.action;
+            return acc;
+        },{});
+
+        const summary = Object.values(uniqueUser).reduce((acc: Summary,cur: string) => {
+            acc[cur] = (acc[cur] || 0) + 1;
+            return acc
+        }, {CANCEL:0, RESERVE:0}) as Summary
+
+
+        return summary
+    }
+
+    async findAll(userId: string): Promise<Ticket[]> {
+        type TicketWithIsReserved = Ticket & {
+            isReserved?: boolean,
+            ticketReserved?: number,
+        }
+        const allTicket: TicketWithIsReserved[] = await this.repo.findAll();
+        const myReservedRecords = await this.repo.findReserveRecordByUserId(userId);
+
         for (let i = 0; i < allTicket.length; i++) {
             const ticket = allTicket[i];
             if (ticket.id) {
                 const reserveByTicketId = await this.findReserveRecordById(ticket.id);
+                const reserveRecordForTicket = myReservedRecords.find(r => r.ticketId === ticket.id);
+                ticket.isReserved = reserveRecordForTicket !== undefined ? true : false;
                 ticket.outOfTicket = reserveByTicketId.length >= ticket.totalOfSeat;
+                ticket.ticketReserved = reserveByTicketId.length;
             }
         }
         return allTicket;
@@ -48,13 +74,14 @@ export class TicketService {
         return await this.repo.myReserveHistory(userId);
     }
 
-    async createReserveHistory(data: ReserveTicketDto): Promise<ReserveHistory> {
+    async createReserveHistory(data: ReserveTicketDto, ticketName: string): Promise<ReserveHistory> {
         return this.repo.createReserveHistory(
             {
                 ticketId: data.ticketId,
                 action: ReserveAction[data.reserveAction],
                 userId: data.userId,
-                dataTime: new Date()
+                dataTime: new Date(),
+                ticketName: ticketName
             }
         );
     }
@@ -80,7 +107,7 @@ export class TicketService {
                     throw new BadRequestException('You already reserve this concert');
                 }
 
-                await this.createReserveHistory(dto);
+                await this.createReserveHistory(dto, ticket.concertName);
                 ticketId = await this.repo.reserve(dto);
             } else {
                 const reserveRecordToRemove = myReservedRecords.find(r => r.ticketId === dto.ticketId);
@@ -88,7 +115,7 @@ export class TicketService {
                     throw new BadRequestException('Not found reserved ticket');
                 }
 
-                await this.createReserveHistory(dto);
+                await this.createReserveHistory(dto, ticket.concertName);
                 ticketId = await this.repo.removeReserveTicket(reserveRecordToRemove.id);
             }
         }

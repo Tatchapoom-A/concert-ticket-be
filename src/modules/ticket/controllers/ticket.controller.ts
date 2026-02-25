@@ -6,6 +6,7 @@ import { Role } from "src/common/enums/role.enum";
 import { ReserveTicketDto } from "../dto/reserve-ticket.dto";
 import { Ticket } from "../entities/ticket.entity";
 import { ReserveHistory } from "../entities/reserve-history.entity";
+import { Summary } from "../entities/reserve-summary.entity";
 
 @Controller('tickets')
 export class TicketController {
@@ -27,9 +28,15 @@ export class TicketController {
         }
     }
 
-    @Get()
-    async findAll(): Promise<Ticket[]> {
-        return await this.ticketService.findAll();
+    @Get('summary')
+    async summary(): Promise<Summary> {
+        return await this.ticketService.getSummary();
+    }
+
+    @Get('user/:userId')
+    async findAll(@Param("userId") userId: string): Promise<Ticket[]> {
+        console.log(`findAll has been called ${new Date}`);
+        return await this.ticketService.findAll(userId);
     }
 
     @Post('reservations')

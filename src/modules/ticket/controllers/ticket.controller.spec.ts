@@ -15,6 +15,7 @@ describe('TicketController', () => {
     reservation: jest.fn(),
     myReservationHistory: jest.fn(),
     reservationHistory: jest.fn(),
+    getSummary: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -79,7 +80,7 @@ describe('TicketController', () => {
       }];
       service.findAll.mockResolvedValue(tickets);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll("001");
 
       expect(service.findAll).toHaveBeenCalled();
       expect(result).toEqual(tickets);
@@ -134,6 +135,22 @@ describe('TicketController', () => {
       const result = await controller.reservationHistory();
 
       expect(service.reservationHistory).toHaveBeenCalled();
+      expect(result).toEqual(data);
+    });
+  });
+
+
+  describe('summary', () => {
+    it('should return all reservation history', async () => {
+      const data = {
+        RESERVE:0,
+        CANCEL:1
+      };
+      service.getSummary.mockResolvedValue(data);
+
+      const result = await controller.summary();
+
+      expect(service.getSummary).toHaveBeenCalled();
       expect(result).toEqual(data);
     });
   });

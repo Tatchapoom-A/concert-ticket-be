@@ -18,6 +18,7 @@ describe('TicketService', () => {
     createReserveHistory: jest.fn(),
     reserve: jest.fn(),
     removeReserveTicket: jest.fn(),
+    reserveHistory: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -63,7 +64,7 @@ describe('TicketService', () => {
     it('Should throw BadRequestException if Out of ticket', async () => {
       repo.findById.mockResolvedValue({ id: 't1', totalOfSeat: 2 } as any);
 
-      repo.findReserveRecordById.mockResolvedValue([{}, {}] as any); 
+      repo.findReserveRecordById.mockResolvedValue([{}, {}] as any);
 
       await expect(service.reservation(reserveDto)).rejects.toThrow(
         new BadRequestException('Out of ticket'),
@@ -91,6 +92,53 @@ describe('TicketService', () => {
 
       expect(result).toBe('reserved-id-123');
       expect(repo.reserve).toHaveBeenCalled();
+    });
+  });
+
+  describe('getSummary', () => {
+    const reserveDto = {
+      ticketId: 't1',
+      userId: 'u1',
+      reserveAction: ReserveAction.RESERVE,
+    };
+
+    it('Should return summary data', async () => {
+      repo.reserveHistory.mockResolvedValue([
+        {
+          id: '3eae8cb2-d75f-4196-81ac-d1788ad8006e',
+          ticketId: '506279a2-7fc1-4ca3-8e3f-a28b17edb62e',
+          action: 'RESERVE',
+          userId: 'Poom',
+          ticketName: 'Test con 002'
+        },
+        {
+          id: '88995740-2a0f-4329-9797-ea5ec79af84f',
+          ticketId: '3924198e-9fd9-41a7-bc7e-cfd1c26ac2f7',
+          action: 'RESERVE',
+          userId: 'Poom',
+          ticketName: 'Test con 002'
+        },
+        {
+          id: '7df64fe2-94e1-4634-967b-391adb09daf5',
+          ticketId: '5c27d008-bc0e-46a4-89dd-6a2ec69b195f',
+          action: 'RESERVE',
+          userId: 'Poom',
+          ticketName: 'Test con 002'
+        },
+        {
+          id: 'e235bcd2-d540-4bfd-b3f2-b2b1239d20d8',
+          ticketId: '3924198e-9fd9-41a7-bc7e-cfd1c26ac2f7',
+          action: 'CANCEL',
+          userId: 'Poom',
+          ticketName: 'Test con 002'
+        }
+      ] as any);
+
+      const result = await service.getSummary();
+      expect(result).toStrictEqual({
+        "CANCEL": 1,
+        "RESERVE": 2
+      });
     });
   });
 });
