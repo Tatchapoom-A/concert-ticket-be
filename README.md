@@ -1,8 +1,11 @@
 # How to run
 
-## Install packages
+### Install packages
 - Run command `npm install`
-
+### How to run project
+- Run command `npm run start`
+### How to run unit tests
+- Run command `npm run test `
 ## Architechture
 ### Layered architecture (Controller-Service-Repository)
 #### Controller (API/Presentation Layer)
@@ -20,5 +23,3 @@
 - @nestjs/testing: For support unit test.
 - class-validator: Data Validation for DTO.
 - crypto: UUID is generator
-## How to run unit tests
-Run command `npm run test `
