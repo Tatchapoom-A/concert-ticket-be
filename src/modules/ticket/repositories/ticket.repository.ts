@@ -20,17 +20,17 @@ export class TicketRepository {
         {
             id: "56fd2d7a-8e7d-4a8d-9f36-061d3932220d",
             ticketId: "ed1386c4-43d3-4de3-9c21-6788ee1c8df3",
-            userId: "001"
+            userId: "Other-mock"
         },
         {
             id: "9a98c773-dc36-47d2-ba37-7afed2e29e79",
             ticketId: "ed1386c4-43d3-4de3-9c21-6788ee1c8df3",
-            userId: "002"
+            userId: "Other-mock"
         },
         {
             id: "37e6edf1-884d-4bb1-90e3-96758e0bfaf4",
             ticketId: "ed1386c4-43d3-4de3-9c21-6788ee1c8df3",
-            userId: "003"
+            userId: "Other-mock"
         }
     ];
     private reserveHistories: ReserveHistory[] = [];
