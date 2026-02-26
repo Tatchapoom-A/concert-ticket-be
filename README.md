@@ -20,3 +20,5 @@
 - @nestjs/testing: For support unit test.
 - class-validator: Data Validation for DTO.
 - crypto: UUID is generator
+## How to run unit tests
+Run command `npm run test `
