@@ -35,7 +35,6 @@ export class TicketController {
 
     @Get('user/:userId')
     async findAll(@Param("userId") userId: string): Promise<Ticket[]> {
-        console.log(`findAll has been called ${new Date}`);
         return await this.ticketService.findAll(userId);
     }
 
