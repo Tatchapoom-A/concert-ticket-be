@@ -23,3 +23,11 @@
 - @nestjs/testing: For support unit test.
 - class-validator: Data Validation for DTO.
 - crypto: UUID is generator
+# Optimization
+### Apply microservice architecture to support intensive data and more people access.
+- Scalability
+- Technology Flexibility
+- Maintainability
+- Fault Isolation
+### How to handle when many users want to reserve the ticket at the same time
+Apply Message Queue to receive all reserve request, Then process each item in sequence (First-come, First-served).
